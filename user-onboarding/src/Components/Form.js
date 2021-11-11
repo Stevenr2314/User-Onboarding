@@ -1,7 +1,28 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import * as Yup from 'yup';
 
+const formSchema = Yup.object().shape({
+    name: Yup.string()
+        .required('Must include a name'),
+    email: Yup.string()
+        .email('Must be a valid email address.')
+        .required('Must include an email address.'),
+    pwd: Yup.string()
+        .required('Password is required.')
+        .min(8, 'Password must be at least 8 characters long.'),
+    tos: Yup.boolean(true)
+        .required('You must accept Terms of Service')
+})
 
 function Form (props) {
+
+    const [errors, setErrors] = useState({
+        name: '',
+        email: '',
+        pwd: '',
+        tos: ''
+    })
+    const [buttonDisabled, setButtonDisabled] = useState(true)
 
     const handleChange = event => {
         const {name, value, type, checked} = event.target
@@ -14,6 +35,13 @@ function Form (props) {
         event.preventDefault();
         props.submit();
     }
+
+    useEffect( () => {
+        formSchema.isValid(props.form)
+        .then(valid => {
+            setButtonDisabled(!valid)
+        })
+    }, [props.form])
 
     return(
         <form onSubmit={handleSubmit}>
@@ -54,7 +82,7 @@ function Form (props) {
                 />
             </label>
             <br/>
-            <button type='submit'>Submit</button>
+            <button type='submit' disabled={buttonDisabled}>Submit</button>
 
         </form>
     );
