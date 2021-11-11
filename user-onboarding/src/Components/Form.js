@@ -10,7 +10,8 @@ const formSchema = Yup.object().shape({
     pwd: Yup.string()
         .required('Password is required.')
         .min(8, 'Password must be at least 8 characters long.'),
-    tos: Yup.boolean(true)
+    tos: Yup.bool()
+        .oneOf([true], 'You must accept Terms of Service')
         .required('You must accept Terms of Service')
 })
 
@@ -24,10 +25,16 @@ function Form (props) {
     })
     const [buttonDisabled, setButtonDisabled] = useState(true)
 
+    const setFormErrors = (name, value) => {
+        Yup.reach(formSchema, name).validate(value)
+            .then(() => setErrors({...errors, [name]: ''}))
+            .catch( err => setErrors({...errors, [name]: err.errors[0]}))
+    }
+
     const handleChange = event => {
         const {name, value, type, checked} = event.target
         const valueToUse = type === 'checkbox' ? checked : value
-
+        setFormErrors(name, valueToUse);
         props.change(name, valueToUse);
     }
 
@@ -44,47 +51,52 @@ function Form (props) {
     }, [props.form])
 
     return(
-        <form onSubmit={handleSubmit}>
-            <label>Name: 
-                <input 
-                type='text'
-                name='name'
-                value={props.form.name}
-                onChange={event => handleChange(event)}
-                />
+        <div>
+            <div>
+                <div>{errors.name}</div><div>{errors.email}</div><div>{errors.pwd}</div><div>{errors.tos}</div>
+            </div>
+            <form onSubmit={handleSubmit}>
+                <label>Name: 
+                    <input 
+                    type='text'
+                    name='name'
+                    value={props.form.name}
+                    onChange={event => handleChange(event)}
+                    />
 
-            </label>
-            <br/>
-            <label>Email: 
+                </label>
+                <br/>
+                <label>Email: 
+                    <input 
+                    type='text'
+                    name='email'
+                    value={props.form.email}
+                    onChange={event => handleChange(event)}
+                    />
+                </label>
+                <br/>
+                <label>Password: 
+                    <input 
+                    type='password'
+                    name='pwd'
+                    value={props.form.pwd}
+                    onChange={event => handleChange(event)}
+                    />
+                </label>
+                <br/>
+                <label>Terms of Service 
                 <input 
-                type='text'
-                name='email'
-                value={props.form.email}
-                onChange={event => handleChange(event)}
-                />
-            </label>
-            <br/>
-            <label>Password: 
-                <input 
-                type='password'
-                name='pwd'
-                value={props.form.pwd}
-                onChange={event => handleChange(event)}
-                />
-            </label>
-            <br/>
-            <label>Terms of Service 
-            <input 
-                type='checkbox'
-                name='tos'
-                checked={props.form.tos}
-                onChange={event => handleChange(event)}
-                />
-            </label>
-            <br/>
-            <button type='submit' disabled={buttonDisabled}>Submit</button>
+                    type='checkbox'
+                    name='tos'
+                    checked={props.form.tos}
+                    onChange={event => handleChange(event)}
+                    />
+                </label>
+                <br/>
+                <button type='submit' disabled={buttonDisabled}>Submit</button>
 
-        </form>
+            </form>
+        </div>
     );
 }
 
