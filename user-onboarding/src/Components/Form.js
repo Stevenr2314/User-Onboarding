@@ -53,7 +53,7 @@ function Form (props) {
     return(
         <div>
             <div>
-                <div>{errors.name}</div><div>{errors.email}</div><div>{errors.pwd}</div><div>{errors.tos}</div>
+                <div id='errName'>{errors.name}</div><div id='errEmail'>{errors.email}</div><div id='errPwd'>{errors.pwd}</div><div id='errTos'>{errors.tos}</div>
             </div>
             <form onSubmit={handleSubmit}>
                 <label>Name: 
@@ -93,7 +93,7 @@ function Form (props) {
                     />
                 </label>
                 <br/>
-                <button type='submit' disabled={buttonDisabled}>Submit</button>
+                <button id='submitBtn' type='submit' disabled={buttonDisabled}>Submit</button>
 
             </form>
         </div>
